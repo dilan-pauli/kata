@@ -27,14 +27,14 @@ import (
 func convertRomanNumeralToInt(input string) (int, error) {
 
 	if len(input) <= 1 || len(input) >= 15 {
-		return -1, errors.New("Input must be between 1 and 15.")
+		return -1, errors.New("input must be between 1 and 15")
 	}
 
 	matched, err := regexp.MatchString("^[IVXLCDMivxlcdm]+$", input)
 	if err != nil {
 		return -1, err
 	} else if !matched {
-		return -1, errors.New("Input string contains invalid characters.")
+		return -1, errors.New("input string contains invalid characters")
 	}
 
 	lookup := map[rune]int{
@@ -48,13 +48,17 @@ func convertRomanNumeralToInt(input string) (int, error) {
 	}
 
 	total := 0
+	last := '*'
 	for _, letter := range input {
 		total = total + lookup[letter]
+		if last == 'I' && (letter == 'V' || letter == 'X') {
+			total = total - lookup[last] - 1
+		} else if last == 'X' && (letter == 'L' || letter == 'C') {
+			total = total - lookup[last] - 10
+		} else if last == 'C' && (letter == 'D' || letter == 'M') {
+			total = total - lookup[last] - 100
+		}
+		last = letter
 	}
-
-	// Can make a map that will let me trade in the char for the value it represetns
-
-	// Need to handle the case where I X and C come before there coresponding
-
 	return total, nil
 }
